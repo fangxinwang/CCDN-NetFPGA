@@ -1,0 +1,11 @@
+projects/driver
+projects/cpci
+projects/dram_queue_test
+projects/router_buffer_sizing
+projects/selftest
+projects/reference_switch
+projects/reference_nic
+projects/router_kit
+projects/dram_router
+lib/java_old
+lib/Perl5_old
