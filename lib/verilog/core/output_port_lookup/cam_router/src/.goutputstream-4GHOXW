@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////////
+// $Id: ip_checksum_ttl.v 5240 2009-03-14 01:50:42Z grg $
+//
+// Module: ip_checksum_ttl.v
+// Project: NF2.1 reference router
+// Description: Check the IP checksum over the IP header, and
+//              generate a new one assuming that the TTL gets decremented.
+//              Check if the TTL is valid, and generate the new TTL.
+// Modified for CCDN
+///////////////////////////////////////////////////////////////////////////////
+`timescale 1ns/100ps
+module ip_checksum_ttl
+  #(parameter DATA_WIDTH = 64)
+  (
+   //--- datapath interface
+   input  [DATA_WIDTH-1:0]            in_data,
+   input                              in_wr,
+
+   //--- interface to preprocess
+   input                              word_ETH_IP_VER,
+   input                              word_IP_LEN_ID,
+   input                              word_IP_FRAG_TTL_PROTO,  //

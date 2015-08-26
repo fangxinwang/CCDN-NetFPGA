@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="scone" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\scone" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\scone" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="getarg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\api_lib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\api_msg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\err.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\icmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\inet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\ip_addr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\ipv4\icmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\ipv4\ip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\ipv4\ip_addr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\lwip\api.h" />
+		<Unit filename="lwtcp\lwip\api_msg.h" />
+		<Unit filename="lwtcp\lwip\arch.h" />
+		<Unit filename="lwtcp\lwip\cc.h" />
+		<Unit filename="lwtcp\lwip\debug.h" />
+		<Unit filename="lwtcp\lwip\def.h" />
+		<Unit filename="lwtcp\lwip\err.h" />
+		<Unit filename="lwtcp\lwip\icmp.h" />
+		<Unit filename="lwtcp\lwip\inet.h" />
+		<Unit filename="lwtcp\lwip\ip.h" />
+		<Unit filename="lwtcp\lwip\ip_addr.h" />
+		<Unit filename="lwtcp\lwip\list.h" />
+		<Unit filename="lwtcp\lwip\lwipopts.h" />
+		<Unit filename="lwtcp\lwip\mem.h" />
+		<Unit filename="lwtcp\lwip\memp.h" />
+		<Unit filename="lwtcp\lwip\netif.h" />
+		<Unit filename="lwtcp\lwip\opt.h" />
+		<Unit filename="lwtcp\lwip\pbuf.h" />
+		<Unit filename="lwtcp\lwip\sockets.h" />
+		<Unit filename="lwtcp\lwip\stats.h" />
+		<Unit filename="lwtcp\lwip\sys.h" />
+		<Unit filename="lwtcp\lwip\tcp.h" />
+		<Unit filename="lwtcp\lwip\tcpip.h" />
+		<Unit filename="lwtcp\lwip\transport_subsys.h" />
+		<Unit filename="lwtcp\lwip\udp.h" />
+		<Unit filename="lwtcp\lwtcp_sr_integration.h" />
+		<Unit filename="lwtcp\main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\memp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\pbuf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\sockets.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\stats.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\sys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\sys_arch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\tcp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\tcp_input.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\tcp_output.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\tcpip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\transport_subsys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lwtcp\udp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="nf2\nf2.h" />
+		<Unit filename="nf2\nf2util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="nf2\nf2util.h" />
+		<Unit filename="or_arp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_arp.h" />
+		<Unit filename="or_cccp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_cccp.h" />
+		<Unit filename="or_cli.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_cli.h" />
+		<Unit filename="or_ctable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_ctable.h" />
+		<Unit filename="or_data_types.h" />
+		<Unit filename="or_dijkstra.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_dijkstra.h" />
+		<Unit filename="or_dijkstra_test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_icmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_icmp.h" />
+		<Unit filename="or_iface.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_iface.h" />
+		<Unit filename="or_ip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_ip.h" />
+		<Unit filename="or_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_main.h" />
+		<Unit filename="or_nat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_nat.h" />
+		<Unit filename="or_netfpga.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_netfpga.h" />
+		<Unit filename="or_output.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_output.h" />
+		<Unit filename="or_pwospf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_pwospf.h" />
+		<Unit filename="or_rtable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_rtable.h" />
+		<Unit filename="or_sping.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_sping.h" />
+		<Unit filename="or_utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_utils.h" />
+		<Unit filename="or_vns.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_vns.h" />
+		<Unit filename="or_www.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="or_www.h" />
+		<Unit filename="rawsock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_base.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_base.h" />
+		<Unit filename="sr_base_internal.h" />
+		<Unit filename="sr_cpu_extension_nf2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_cpu_extension_nf2.h" />
+		<Unit filename="sr_dumper.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_dumper.h" />
+		<Unit filename="sr_integration.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_lwtcp_glue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_lwtcp_glue.h" />
+		<Unit filename="sr_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_vns.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sr_vns.h" />
+		<Unit filename="vnscommand.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

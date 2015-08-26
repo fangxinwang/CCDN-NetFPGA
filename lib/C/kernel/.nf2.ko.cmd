@@ -1,0 +1,1 @@
+cmd_/home/netfpga/netfpga/lib/C/kernel/nf2.ko := ld -r -m elf_i386 -T /usr/src/kernels/2.6.33.8-149.fc13.i686/scripts/module-common.lds --build-id -o /home/netfpga/netfpga/lib/C/kernel/nf2.ko /home/netfpga/netfpga/lib/C/kernel/nf2.o /home/netfpga/netfpga/lib/C/kernel/nf2.mod.o

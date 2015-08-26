@@ -1,0 +1,65 @@
+///////////////////////////////////////////////////////////////////////////////
+// vim:set shiftwidth=3 softtabstop=3 expandtab:
+// $Id: router_op_lut_regs.v 2089 2007-08-06 23:17:26Z grg $
+//
+// Module: router_op_lut_regs.v
+// Project: NF2.1
+// Description: Demultiplexes, stores and serves register requests
+//
+///////////////////////////////////////////////////////////////////////////////
+`timescale 1ns/1ps
+
+module router_op_lut_regs
+   #( parameter NUM_QUEUES = 5,
+       parameter ARP_LUT_DEPTH_BITS = 4,
+       parameter LPM_LUT_DEPTH_BITS = 4,
+       parameter FILTER_DEPTH_BITS = 4,
+       parameter UDP_REG_SRC_WIDTH = 2,
+       // --- CCDN
+       parameter NAME_LENTH = 32
+   )
+   (
+      input                               reg_req_in,
+      input                               reg_ack_in,
+      input                               reg_rd_wr_L_in,
+      input  [`UDP_REG_ADDR_WIDTH-1:0]    reg_addr_in,
+      input  [`CPCI_NF2_DATA_WIDTH-1:0]   reg_data_in,
+      input  [UDP_REG_SRC_WIDTH-1:0]      reg_src_in,
+
+      output                              reg_req_out,
+      output                              reg_ack_out,
+      output                              reg_rd_wr_L_out,
+      output [`UDP_REG_ADDR_WIDTH-1:0]    reg_addr_out,
+      output [`CPCI_NF2_DATA_WIDTH-1:0]   reg_data_out,
+      output [UDP_REG_SRC_WIDTH-1:0]      reg_src_out,
+
+      // --- interface to op_lut_process_sm
+      input                               pkt_sent_from_cpu,              // pulsed: we've sent a pkt from the CPU
+      input                               pkt_sent_to_cpu_options_ver,    // pulsed: we've sent a pkt to the CPU coz it has options/bad version
+      input                               pkt_sent_to_cpu_bad_ttl,        // pulsed: sent a pkt to the CPU coz the TTL is 1 or 0
+      input                               pkt_sent_to_cpu_dest_ip_hit,    // pulsed: sent a pkt to the CPU coz it has hit in the destination ip filter list
+      input                               pkt_forwarded     ,             // pulsed: forwarded pkt to the destination port
+      input                               pkt_dropped_checksum,           // pulsed: dropped pkt coz bad checksum
+      input                               pkt_sent_to_cpu_non_ip,         // pulsed: sent pkt to cpu coz it's not IP
+      input                               pkt_sent_to_cpu_arp_miss,       // pulsed: sent pkt to cpu coz we didn't find arp entry for next hop ip
+      input                               pkt_sent_to_cpu_lpm_miss,       // pulsed: sent pkt to cpu coz we didn't find lpm entry for destination ip
+      input                               pkt_dropped_wrong_dst_mac,      // pulsed: dropped pkt not destined to us
+
+      // --- interface to ip_lpm
+      output [LPM_LUT_DEPTH_BITS-1:0 ]    lpm_rd_addr,          // address in table to read
+      output                              lpm_rd_req,           // request a read
+      input [31:0]                        lpm_rd_ip,            // ip to match in the CAM
+      input [31:0]                        lpm_rd_mask,          // subnet mask
+      input [NUM_QUEUES-1:0]              lpm_rd_oq,            // input queue
+      input [31:0]                        lpm_rd_next_hop_ip,   // ip addr of next hop
+      input                               lpm_rd_ack,           // pulses high
+      output [LPM_LUT_DEPTH_BITS-1:0]     lpm_wr_addr,
+      output                              lpm_wr_req,
+      output [NUM_QUEUES-1:0]             lpm_wr_oq,
+      output [31:0]                       lpm_wr_next_hop_ip,   // ip addr of next hop
+      output [31:0]                       lpm_wr_ip,            // data to match in the CAM
+      output [31:0]                       lpm_wr_mask,
+      input                               lpm_wr_ack,
+
+      // --- CCDN  
+      // --- interface to cccp_lut   

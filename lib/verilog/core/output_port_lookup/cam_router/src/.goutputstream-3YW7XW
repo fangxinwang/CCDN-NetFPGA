@@ -1,0 +1,24 @@
+///////////////////////////////////////////////////////////////////////////////
+// vim:set shiftwidth=3 softtabstop=3 expandtab:
+// $Id: router_op_lut_regs_non_cntr.v 5437 2009-05-04 21:11:51Z grg $
+//
+// Module: router_op_lut_regs_non_cntr.v
+// Project: NF2.1
+// Description: Demultiplexes, stores and serves register requests
+//
+// Contains the non-counter registers.
+//
+///////////////////////////////////////////////////////////////////////////////
+`timescale 1ns/1ps
+
+module router_op_lut_regs_non_cntr
+   #( parameter NUM_QUEUES = 5,
+       parameter ARP_LUT_DEPTH_BITS = 4,
+       parameter LPM_LUT_DEPTH_BITS = 4,
+       parameter FILTER_DEPTH_BITS = 4,
+       parameter UDP_REG_SRC_WIDTH = 2,
+       // --- CCDN
+       parameter NAME_LENTH = 32
+   )
+   (
+      //

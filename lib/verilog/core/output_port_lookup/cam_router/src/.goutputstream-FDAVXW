@@ -1,0 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////
+// $Id: cccp_lut.v 5089 2009-02-23 02:14:38Z grg $
+//
+// Module: cccp_lut.v
+// Project: NF2.1
+// Description: Finds the longest prefix match of the incoming content name
+//              gives the ip of the next hop and the output port
+// Designed for CCDN
+///////////////////////////////////////////////////////////////////////////////
+`define ROUTER_OP_LUT_CCCP_TABLE_DEPTH 32
+  module cccp_lut
+    #(parameter DATA_WIDTH = 64,
+      parameter NUM_QUEUES = 8,		//

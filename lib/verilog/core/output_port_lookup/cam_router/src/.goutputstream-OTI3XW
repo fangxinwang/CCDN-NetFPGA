@@ -1,0 +1,154 @@
+///////////////////////////////////////////////////////////////////////////////
+// vim:set shiftwidth=3 softtabstop=3 expandtab:
+// $Id: output_port_lookup.v 5240 2009-03-14 01:50:42Z grg $
+//
+// Module: router_output_port.v
+// Project: NF2.1
+// Description: reads incoming packets parses them and decides on the output port
+//  and adds it as a header. The design of this module assumes that only one eop
+//  will be in the pipeline of this module at any given time.
+//  i.e. we assume pkt length incl pkt and module headers >= 8*DATA_WIDTH bits
+//  for a 64 bit datapath, this is 64 bytes.
+//
+//  Data coming in goes into the input fifo and is preprocessed for lookups,... by
+//  the preprocess block. Then the data is pulled out of the fifo when the preprocess
+//  is done and modified on it's way to the output queues.
+//
+//  There are five operations happening in the preprocess simultaneously:
+//    1- eth_parser: will decide if the destination MAC addr is us, and the pkt type (ARP, IP, ...)
+//    2- IP_LPM then ARP_lookup: give the next hop mac, and the output port
+//    3- ip_cheksum_ttl: validates the IP checksum, makes the new checksum, and validates the hdr len/version
+//    4- op_lut_hdr_parser: checks to see if the pkt is from the CPU
+//    5- dest_ip_filter: checks to see if the destination ip address says the packet should go to the cpu
+//
+//  The op_lut_process_sm block will then pull out the data from the input fifo, modify the
+//  next hop MAC and src addresses, modify the IP TTL and send the pkt out to
+//  the output queues for an IP packet. For an ARP packet or a packet whose
+//  next hop MAC is not found, the pkt is sent to the CPU (also sent are ip pkts with
+//  options, unknown protocols, version!=4)
+//
+///////////////////////////////////////////////////////////////////////////////
+`timescale 1ns/1ps
+`include "registers.v"
+  module output_port_lookup
+    #(parameter DATA_WIDTH = 64,
+      parameter CTRL_WIDTH=DATA_WIDTH/8,
+      parameter UDP_REG_SRC_WIDTH = 2,
+      parameter INPUT_ARBITER_STAGE_NUM = 2,
+      parameter IO_QUEUE_STAGE_NUM = `IO_QUEUE_STAGE_NUM,
+      parameter NUM_OUTPUT_QUEUES = 8,
+      parameter NUM_IQ_BITS = 3,
+      parameter STAGE_NUM = 4,
+      parameter CPU_QUEUE_NUM = 0,
+      // --- CCDN
+      parameter NAME_LENTH = 32
+      )
+
+   (// --- data path interface
+    output     [DATA_WIDTH-1:0]        out_data,
+    output     [CTRL_WIDTH-1:0]        out_ctrl,
+    output                             out_wr,
+    input                              out_rdy,
+
+    input  [DATA_WIDTH-1:0]            in_data,
+    input  [CTRL_WIDTH-1:0]            in_ctrl,
+    input                              in_wr,
+    output                             in_rdy,
+
+    // --- Register interface
+    input                              reg_req_in,
+    input                              reg_ack_in,
+    input                              reg_rd_wr_L_in,
+    input  [`UDP_REG_ADDR_WIDTH-1:0]   reg_addr_in,
+    input  [`CPCI_NF2_DATA_WIDTH-1:0]  reg_data_in,
+    input  [UDP_REG_SRC_WIDTH-1:0]     reg_src_in,
+
+    output                             reg_req_out,
+    output                             reg_ack_out,
+    output                             reg_rd_wr_L_out,
+    output  [`UDP_REG_ADDR_WIDTH-1:0]  reg_addr_out,
+    output  [`CPCI_NF2_DATA_WIDTH-1:0] reg_data_out,
+    output  [UDP_REG_SRC_WIDTH-1:0]    reg_src_out,
+
+    // --- Misc
+    input                              clk,
+    input                              reset);
+
+   function integer log2;
+      input integer number;
+      begin
+         log2=0;
+         while(2**log2<number) begin
+            log2=log2+1;
+         end
+      end
+   endfunction // log2
+
+   //--------------------- Internal Parameter-------------------------
+   parameter LPM_LUT_DEPTH = `ROUTER_OP_LUT_ROUTE_TABLE_DEPTH;
+   parameter LPM_LUT_DEPTH_BITS = log2(LPM_LUT_DEPTH);
+   parameter ARP_LUT_DEPTH = `ROUTER_OP_LUT_ARP_TABLE_DEPTH;
+   parameter ARP_LUT_DEPTH_BITS = log2(ARP_LUT_DEPTH);
+   parameter FILTER_DEPTH = `ROUTER_OP_LUT_DST_IP_FILTER_TABLE_DEPTH;
+   parameter FILTER_DEPTH_BITS = log2(FILTER_DEPTH);
+   parameter NUM_QUEUES = NUM_OUTPUT_QUEUES;
+   parameter NUM_QUEUES_WIDTH = log2(NUM_QUEUES);
+   // --- CCDN
+   parameter CCCP_LUT_DEPTH = `ROUTER_OP_LUT_CCCP_TABLE_DEPTH;
+   parameter CCCP_LUT_DEPTH_BITS = log2(CCCP_LUT_DEPTH);
+
+
+   //---------------------- Wires/Regs -------------------------------
+   wire [47:0]                 mac_0, mac_1, mac_2, mac_3;
+   wire [NUM_QUEUES_WIDTH-1:0] mac_dst_port_num;
+   wire [31:0]                 lpm_next_hop_ip;
+
+   wire [NUM_QUEUES-1:0]       lpm_output_port;
+   wire [LPM_LUT_DEPTH_BITS-1:0]   lpm_rd_addr;
+   wire [31:0]                 lpm_rd_ip;
+   wire [31:0]                 lpm_rd_next_hop_ip;
+   wire [31:0]                 lpm_rd_mask;
+   wire [NUM_QUEUES-1:0]       lpm_rd_oq;
+   wire [LPM_LUT_DEPTH_BITS-1:0]   lpm_wr_addr;
+   wire [31:0]                 lpm_wr_ip;
+   wire [31:0]                 lpm_wr_next_hop_ip;
+   wire [31:0]                 lpm_wr_mask;
+   wire [NUM_QUEUES-1:0]       lpm_wr_oq;
+
+   wire [47:0]                 lpm_next_hop_mac;
+   wire [NUM_QUEUES-1:0]       lpm_op_port;
+   // --- CCDN
+   wire [47:0]                 cccp_next_hop_mac;
+   wire [NUM_QUEUES-1:0]       cccp_op_port;
+
+   wire [ARP_LUT_DEPTH_BITS-1:0]   arp_rd_addr;
+   wire [47:0]                 arp_rd_mac;
+   wire [31:0]                 arp_rd_ip;
+   wire [ARP_LUT_DEPTH_BITS-1:0]   arp_wr_addr;
+   wire [47:0]                 arp_wr_mac;
+   wire [31:0]                 arp_wr_ip;
+
+   wire [FILTER_DEPTH_BITS-1:0]dest_ip_filter_rd_addr;
+   wire [31:0]                 dest_ip_filter_rd_ip;
+   wire [FILTER_DEPTH_BITS-1:0]dest_ip_filter_wr_addr;
+   wire [31:0]                 dest_ip_filter_wr_ip;
+
+   wire [7:0]                  ip_new_ttl;
+   wire [15:0]                 ip_new_checksum;
+
+   wire [NUM_QUEUES-1:0]       to_cpu_output_port;
+   wire [NUM_QUEUES-1:0]       from_cpu_output_port;
+   wire [NUM_QUEUES_WIDTH-1:0] input_port_num;
+
+   wire [CTRL_WIDTH-1:0]       in_fifo_ctrl;
+   wire [DATA_WIDTH-1:0]       in_fifo_data;
+
+   wire                        in_fifo_nearly_full;
+
+   // --- CCDN
+   // for cccp_lut
+   wire [31:0]                 cccp_next_hop_ip;
+   wire [NUM_QUEUES-1:0]       cccp_output_port;
+   wire                        cccp_vld; 
+   wire                        cccp_hit;
+   // for cccp_lut   
